@@ -370,14 +370,21 @@ class Level():
 
     def load_background(self):
         self.bg_color = self.map_data['background']['color']
-        bg_image_path = self.map_data['background']['image']
+        path1 = self.map_data['background']['image1']
+        path2 = self.map_data['background']['image2']
 
-        if os.path.isfile(bg_image_path):
-            self.bg_image = pygame.image.load(bg_image_path).convert()
+        if os.path.isfile(path1):
+            self.bg_image1 = pygame.image.load(path1).convert_alpha()
         else:
-            self.bg_image = None
+            self.bg_image1 = None
 
-        self.parallax_speed = self.map_data['background']['parallax_speed']
+        if os.path.isfile(path2):
+            self.bg_image2 = pygame.image.load(path2).convert_alpha()
+        else:
+            self.bg_image2 = None
+
+        self.parallax_speed1 = self.map_data['background']['parallax_speed1']
+        self.parallax_speed2 = self.map_data['background']['parallax_speed2']
         
     def load_tiles(self):
         self.midground_tiles = pygame.sprite.Group()
@@ -450,21 +457,30 @@ class Level():
 
     def generate_layers(self):
         self.world = pygame.Surface([self.width, self.height])
-        self.background = pygame.Surface([self.width, self.height])
+        self.background1 = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
+        self.background2 = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
         self.inactive = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
         self.active = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
         self.foreground = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
 
-    def prerender_inactive_layers(self):
-        self.background.fill(self.bg_color)
+    def tile_image(self, img, surf):
+        surf_w = surf.get_width()
+        surf_h = surf.get_height()
+        img_w = self.bg_image1.get_width()
+        img_h = self.bg_image1.get_height()
         
-        if self.bg_image != None:
-            bg_width = self.bg_image.get_width()
-            bg_height = self.bg_image.get_height()
+        for x in range(0, surf_w, img_w):
+            for y in range(0, surf_h, img_h):
+                surf.blit(img, [x, y])
+                
+    def prerender_inactive_layers(self):
+        self.world.fill(self.bg_color)
+        
+        if self.bg_image1 != None:
+            self.tile_image(self.bg_image1, self.background1)
             
-            for x in range(0, self.width, bg_width):
-                for y in range(0, self.height, bg_height):
-                    self.background.blit(self.bg_image, [x, y])
+        if self.bg_image2 != None:
+            self.tile_image(self.bg_image2, self.background2)
                     
         self.midground_tiles.draw(self.inactive)
         self.main_tiles.draw(self.inactive)        
@@ -651,10 +667,13 @@ class Game():
         self.active_sprites.draw(self.level.active)
 
         offset_x, offset_y = self.calculate_offset()
-        bg_offset_x = -1 * offset_x * self.level.parallax_speed
-        bg_offset_y = -1 * offset_y * self.level.parallax_speed
+        bg1_offset_x = -1 * offset_x * self.level.parallax_speed1
+        bg1_offset_y = -1 * offset_y * self.level.parallax_speed1
+        bg2_offset_x = -1 * offset_x * self.level.parallax_speed2
+        bg2_offset_y = -1 * offset_y * self.level.parallax_speed2
         
-        self.level.world.blit(self.level.background, [bg_offset_x, bg_offset_y])
+        self.level.world.blit(self.level.background1, [bg1_offset_x, bg1_offset_y])
+        self.level.world.blit(self.level.background2, [bg2_offset_x, bg2_offset_y])
         self.level.world.blit(self.level.inactive, [0, 0])
         self.level.world.blit(self.level.active, [0, 0])
         self.level.world.blit(self.level.foreground, [0, 0])

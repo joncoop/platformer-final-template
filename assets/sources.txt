@@ -1,7 +1,7 @@
 Images
 https://kenney.nl/assets/simplified-platformer-pack (Characters, Platforms, Items)
 https://kenney.nl/assets/platformer-pack-medieval (Flag)
-
+https://bayat.itch.io/platform-game-assets/ (Backgrounds)
 
 Sounds
 https://freesound.org/people/Lefty_Studios/sounds/369515/ (Jump)
