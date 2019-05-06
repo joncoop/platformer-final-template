@@ -58,19 +58,17 @@ gem_snd = load_sound('assets/sounds/gem.ogg')
 
 # Images
 idle = load_image('assets/images/characters/platformChar_idle.png')
-walk1 = load_image('assets/images/characters/platformChar_walk1.png')
-walk2 = load_image('assets/images/characters/platformChar_walk2.png')
+walk = [load_image('assets/images/characters/platformChar_walk1.png'),
+        load_image('assets/images/characters/platformChar_walk2.png')]
 jump = load_image('assets/images/characters/platformChar_jump.png')
 hurt = load_image('assets/images/characters/platformChar_hurt.png')
                    
 hero_images = { "idle_rt": idle,
-                "walk1_rt": walk1,
-                "walk2_rt": walk2,
+                "walk_rt": walk,
                 "jump_rt": jump,
                 "hurt_rt": hurt,
                 "idle_lt": flip_image(idle),
-                "walk1_lt": flip_image(walk1),
-                "walk2_lt": flip_image(walk2),
+                "walk_lt" : [flip_image(img) for img in walk],
                 "jump_lt": flip_image(jump),
                 "hurt_lt": flip_image(hurt) }
              
@@ -81,11 +79,11 @@ tile_images = { "Grass": load_image('assets/images/tiles/platformPack_tile001.pn
                 "FlagTop": load_image('assets/images/tiles/medievalTile_166.png'),
                 "FlagPole": load_image('assets/images/tiles/medievalTile_190.png') }
         
-basic_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile024a.png'),
-                       "walk2": load_image('assets/images/characters/platformPack_tile024b.png') }
+basic_enemy_images = [ load_image('assets/images/characters/platformPack_tile024a.png'),
+                       load_image('assets/images/characters/platformPack_tile024b.png') ]
 
-platform_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile011a.png'),
-                          "walk2": load_image('assets/images/characters/platformPack_tile011b.png') } 
+platform_enemy_images = [ load_image('assets/images/characters/platformPack_tile011a.png'),
+                          load_image('assets/images/characters/platformPack_tile011b.png') ] 
 
 item_images = { "Gem": load_image('assets/images/items/platformPack_item008.png') }
 
@@ -126,7 +124,8 @@ class Hero(pygame.sprite.Sprite):
 
         self.facing_right = True
         self.steps = 0
-        self.step_rate = 12
+        self.step_rate = 4
+        self.walk_index = 0
         
     def move_to(self, x, y):
         self.rect.x = x
@@ -134,6 +133,9 @@ class Hero(pygame.sprite.Sprite):
         
     def step(self):
         self.steps = (self.steps + 1) % self.step_rate
+
+        if self.steps == 0:
+            self.walk_index = (self.walk_index + 1) % len(self.images['walk_rt'])
         
     def move_left(self):
         self.vx = -self.speed
@@ -216,14 +218,12 @@ class Hero(pygame.sprite.Sprite):
     def set_image(self):
         if self.facing_right:
             idle = self.images['idle_rt']
-            walk1 = self.images['walk1_rt']
-            walk2 = self.images['walk2_rt']
+            walk = self.images['walk_rt']
             jump = self.images['jump_rt']
             hurt = self.images['hurt_rt']
         else:
             idle = self.images['idle_lt']
-            walk1 = self.images['walk1_lt']
-            walk2 = self.images['walk2_lt']
+            walk = self.images['walk_lt']
             jump = self.images['jump_lt']
             hurt = self.images['hurt_lt']
 
@@ -234,10 +234,7 @@ class Hero(pygame.sprite.Sprite):
         elif self.vx == 0:
             self.image = idle
         else:
-            if self.steps < self.step_rate / 2:
-                self.image = walk1
-            else:
-                self.image = walk2
+            self.image = walk[self.walk_index]
             
     def update(self, level):
         self.apply_gravity(level)
@@ -259,7 +256,7 @@ class BasicEnemy(pygame.sprite.Sprite):
         super().__init__()
 
         self.images = images
-        self.image = images["walk1"]
+        self.image = images[0]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -268,8 +265,9 @@ class BasicEnemy(pygame.sprite.Sprite):
         self.vy = 0
 
         self.steps = 0
-        self.step_rate = 12
-
+        self.step_rate = 6
+        self.walk_index = 0
+        
     def reverse(self):
         self.vx = -1 * self.vx
         
@@ -308,16 +306,16 @@ class BasicEnemy(pygame.sprite.Sprite):
         elif self.rect.right > level.width:
             self.rect.right = level.width
             self.should_reverse = True
-
+        
     def step(self):
         self.steps = (self.steps + 1) % self.step_rate
-        
+
+        if self.steps == 0:
+            self.walk_index = (self.walk_index + 1) % len(self.images)
+
     def set_image(self):
-        if self.steps < self.step_rate / 2:
-            self.image = self.images['walk1']
-        else:
-            self.image = self.images['walk2']
-            
+        self.image = self.images[self.walk_index]
+        
     def update(self, level):
         self.should_reverse = False
         
