@@ -7,7 +7,7 @@
 	},
 
 	"physics": {
-		"gravity": 1.25,
+		"gravity": 1.5,
 		"terminal_velocity": 36
 	},
 
