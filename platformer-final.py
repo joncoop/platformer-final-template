@@ -12,7 +12,7 @@ pygame.init()
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 576
 TITLE = "Name of Game"
-FPS = 60
+FPS = 30
 
 # Optional grid for help with level design
 show_grid = True
@@ -81,9 +81,11 @@ tile_images = { "Grass": load_image('assets/images/tiles/platformPack_tile001.pn
                 "FlagTop": load_image('assets/images/tiles/medievalTile_166.png'),
                 "FlagPole": load_image('assets/images/tiles/medievalTile_190.png') }
         
-basic_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile024.png') }
+basic_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile024a.png'),
+                       "walk2": load_image('assets/images/characters/platformPack_tile024b.png') }
 
-platform_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile011.png') } 
+platform_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile011a.png'),
+                          "walk2": load_image('assets/images/characters/platformPack_tile011b.png') } 
 
 item_images = { "Gem": load_image('assets/images/items/platformPack_item008.png') }
 
@@ -111,8 +113,8 @@ class Hero(pygame.sprite.Sprite):
         self.image = images["idle_rt"]
         self.rect = self.image.get_rect()
 
-        self.speed = 8
-        self.jump_power = 24
+        self.speed = 12
+        self.jump_power = 26
         self.vx = 0
         self.vy = 0
 
@@ -121,17 +123,28 @@ class Hero(pygame.sprite.Sprite):
     
         self.reached_goal = False
         self.score = 0
+
+        self.facing_right = True
+        self.steps = 0
+        self.step_rate = 12
         
     def move_to(self, x, y):
         self.rect.x = x
         self.rect.y = y
         
+    def step(self):
+        self.steps = (self.steps + 1) % self.step_rate
+        
     def move_left(self):
         self.vx = -self.speed
+        self.facing_right = False
+        self.step()
     
     def move_right(self):
         self.vx = self.speed
-
+        self.facing_right = True
+        self.step()
+        
     def stop(self):
         self.vx = 0
 
@@ -199,7 +212,33 @@ class Hero(pygame.sprite.Sprite):
 
     def check_goal(self, level):
         self.reached_goal = level.goal.contains(self.rect)
-        
+
+    def set_image(self):
+        if self.facing_right:
+            idle = self.images['idle_rt']
+            walk1 = self.images['walk1_rt']
+            walk2 = self.images['walk2_rt']
+            jump = self.images['jump_rt']
+            hurt = self.images['hurt_rt']
+        else:
+            idle = self.images['idle_lt']
+            walk1 = self.images['walk1_lt']
+            walk2 = self.images['walk2_lt']
+            jump = self.images['jump_lt']
+            hurt = self.images['hurt_lt']
+
+        if self.hurt_timer > 0:
+            self.image = hurt
+        elif self.vy != 0:
+            self.image = jump
+        elif self.vx == 0:
+            self.image = idle
+        else:
+            if self.steps < self.step_rate / 2:
+                self.image = walk1
+            else:
+                self.image = walk2
+            
     def update(self, level):
         self.apply_gravity(level)
         self.move_and_check_tiles(level)
@@ -207,6 +246,7 @@ class Hero(pygame.sprite.Sprite):
         self.process_items(level)
         self.process_enemies(level)
         self.check_goal(level)
+        self.set_image()
 
 class BasicEnemy(pygame.sprite.Sprite):
     '''
@@ -226,6 +266,9 @@ class BasicEnemy(pygame.sprite.Sprite):
 
         self.vx = -4
         self.vy = 0
+
+        self.steps = 0
+        self.step_rate = 12
 
     def reverse(self):
         self.vx = -1 * self.vx
@@ -265,6 +308,15 @@ class BasicEnemy(pygame.sprite.Sprite):
         elif self.rect.right > level.width:
             self.rect.right = level.width
             self.should_reverse = True
+
+    def step(self):
+        self.steps = (self.steps + 1) % self.step_rate
+        
+    def set_image(self):
+        if self.steps < self.step_rate / 2:
+            self.image = self.images['walk1']
+        else:
+            self.image = self.images['walk2']
             
     def update(self, level):
         self.should_reverse = False
@@ -275,6 +327,9 @@ class BasicEnemy(pygame.sprite.Sprite):
         
         if self.should_reverse:
             self.reverse()
+            
+        self.step()
+        self.set_image()
             
 class PlatformEnemy(BasicEnemy):
     '''
@@ -618,13 +673,14 @@ class Game():
                    
     def calculate_offset(self):
         x = -1 * self.hero.rect.centerx + SCREEN_WIDTH / 2
-
+        y = 0
+        
         if self.hero.rect.centerx < SCREEN_WIDTH / 2:
             x = 0
         elif self.hero.rect.centerx > self.level.width - SCREEN_WIDTH / 2:
             x = -1 * self.level.width + SCREEN_WIDTH
 
-        return x, 0
+        return round(x), round(y)
 
     def process_input(self):     
         for event in pygame.event.get():
@@ -673,7 +729,7 @@ class Game():
                 self.advance()
             
     def render(self):
-        self.level.active.fill([0, 0, 0, 0]) # Transparent so background shows through
+        self.level.active.fill([0, 0, 0, 0])
         self.active_sprites.draw(self.level.active)
 
         offset_x, offset_y = self.calculate_offset()
@@ -690,7 +746,7 @@ class Game():
 
         if show_grid:
             self.level.world.blit(self.level.grid, [0, 0])                     
-        
+
         screen.blit(self.level.world, [offset_x, offset_y])
 
         self.show_stats()
