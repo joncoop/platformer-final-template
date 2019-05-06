@@ -60,6 +60,7 @@ Use the code from this repository as a template to create your own platformer. E
 - Create a custom enemy with unique behavior regarding movement.
 - Require the hero to perform a task in order to complete the level. For example, maybe the hero needs to collect a key in order to open a door in the level goal area.
 - Utilize vertical scrolling in a level. You'll need to modify the calculate_offset function to get vertical scrolling to work.
+- Give the hero the ability to do wall jumps. You should be able to modify can_jump to accomplish this.
 - Show time on the stats layer. Give a time bonus for completing a level. Have the hero die if the level is not completed in a set amount of time.
  - Have the hero track coins separately from the score. (They can still be worth points.) Either increase the max hearts or give an extra life when a number of coins is earned. Reset the coin count after the award is given.
 
@@ -79,6 +80,7 @@ Use the code from this repository as a template to create your own platformer. E
 
 - Add ladders to the game. If a player is on a ladder, don't apply gravity. Assign vy by player input instead. Also disable jumping while on a ladder. You should use animated climbing images too.
 - Put switches in the game that open and/or close areas of a level.
+- Add animated cut scenes to the game as transitions between levels. 
 
 ### Super hard
 
