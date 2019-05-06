@@ -40,7 +40,7 @@ Use the code from this repository as a template to create your own platformer.
 - Create a game with at least 4 levels total. Levels should be significantly different in layout and each should be at least 36 block long.
 - Create your own custom artwork for one animated entity in the game. Entities that only flip when they change directions are not considered animated. Animation should include multiple frames such as when the hero runs. http://www.piskelapp.com/ is a good site for this.
 - Create your own custom artwork for at least three animated entities in the game.
-- Use tiles in the midground layer to create complex artwork. For example, the end of the level could have a castle that the hero can run in front of. (Perhaps the door on the castle could be the goal zone.)
+- Use tiles in the midground layer to create complex artwork. For example, the end of the level could have a castle that the hero can run in front of. (Perhaps the location of the door on the castle could correspond to the goal zone.)
 - Display actual hearts to show health. Show empty hearts up to the max hearts limit when the hero's hearts are not at the maximum level.
 - Create invincibility (star) power-up that gives the hero a timed period of invincibility. If you are using an image to indicate when the hero is invincible due to being hurt, be sure that that image is not shown in this situation. This means you will need to create a different timer to track invincibility time from a power up.
 - Invent your own power-up which lasts a limited amount of time or until the player hits an enemy or completes a level.
@@ -94,5 +94,8 @@ This project will count as a major assessments. When you reach 100 points, you c
 
 ## Final Exam
 
-- Use GitHub Pages to create a website for your game.
+The platformer project will also be used as the basis of your final exam. Below is a list of things that may be expected. Don't consider this list final yet. I just want you to have some idea of what to expect now.
+
+- Use GitHub Pages or Google Sites to create a website for your game. 
 - Create cover art for your game. Save it as a PNG file. Print it in color so that I can post it in the room.
+- Create an executable file from your project. The executable should be downloadable from your website.
