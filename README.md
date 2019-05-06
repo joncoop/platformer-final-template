@@ -20,6 +20,8 @@ Use the code from this repository as a template to create your own platformer.
 - Include tiles in the foreground layer of a level. The hero should run behind these images and not interact with them.
 - Keep your assets folder organized. Use subfolders to store different types of assets. Remove unused asset sets from your repository.
 - In your assets folder, update the sources.txt file to keep track of where each set of assets is from.
+- Play music during the start screen. The music should be different than that used for any of the levels.
+- Play music when the player wins the game. The music should be different than that used for any of the levels.
 
 ### Easy
 
@@ -27,8 +29,9 @@ Use the code from this repository as a template to create your own platformer.
 - Create a level which takes place on a different planet. You can modify the gravity and terminal velocity in the level data to create the physics you want. (A gravity of less than 1 will make the world 'bouncier'.) Use a space-themed tiles and background images for your level.
 - Create your own custom artwork for one unanimated entity in the game. http://www.piskelapp.com/ is a good site for this.
 - Create your own custom artwork for at least three unanimated entities in the game.
-- Add sound effects to the following events: jumping, getting items, collding with an enemy, completing a level, and winning the game.
-- Create an interesting start screen that does more than just show the name of the game.
+- Add sound effects to each of the following events: jumping, getting items, colliding with an enemy, completing a level, and when the game ends in a loss.
+- Create an interesting start screen that does more than just show the name of the game. 
+- Create an interesting loss and win screens that do more than just state the outcome of the game. 
 - Add an item other than a coin and give it a point value.
 - Give the hero a maximum number of hearts. Then display hearts/max rather than just hearts. (Displaying heart icons is in the 'Medium' section.)
 - Create an item which gives the hero a heart. When the hero gets this item, hearts should not increase beyond the maximum number the hero can have.
@@ -50,7 +53,6 @@ Use the code from this repository as a template to create your own platformer.
 - Create invincibility (star) power-up that gives the hero a timed period of invincibility. If you are using an image to indicate when the hero is invincible due to being hurt, be sure that that image is not shown in this situation. This means you will need to create a different timer to track invincibility time from a power up.
 - Invent your own power-up which lasts a limited amount of time or until the player hits an enemy or completes a level.
 - Increase the max hearts a player can have when some milestone is achieved, perhaps completing a certain number of levels or achieving a certain score.
-- Have the hero track coins separately from the score. (They can still be worth points.) Give an extra life when a number of coins is earned. Reset the coin count after a life is given.
 - Invent an item which has a negative consequence on a player other than reducing hearts, lives, or points.
 - Put gaps in the blocks that run along the bottom of the level. Then modify the check_world_edges function so that the hero's hearts get set to zero if the player goes past the bottom edge of the world. You'll need to make sure enemies that fall through these gaps are also removed from the game. Pygame's sprite.kill() function will be useful for this.
 - Add a PAUSE stage to the game which is activated when the player presses 'p' (or a button on the joystick). All movement and time should stop during a pause stage. Pressing 'p' again should resume. Be sure to show a message indicating the game is paused. Theme music should also pause. (Pygame has pause and unpause functions for music. Consider adding music helper functions along with play and stop to accomplish this.)
@@ -59,9 +61,11 @@ Use the code from this repository as a template to create your own platformer.
 - Require the hero to perform a task in order to complete the level. For example, maybe the hero needs to collect a key in order to open a door in the level goal area.
 - Utilize vertical scrolling in a level. You'll need to modify the calculate_offset function to get vertical scrolling to work.
 - Show time on the stats layer. Give a time bonus for completing a level. Have the hero die if the level is not completed in a set amount of time.
+ - Have the hero track coins separately from the score. (They can still be worth points.) Either increase the max hearts or give an extra life when a number of coins is earned. Reset the coin count after the award is given.
 
 ### Hard
 
+- Give your hero a lives attribute, perhaps set to 3 when the game starts. When the hero loses all hearts, subtract a life from the hero and have the level restart. The game should end when all lives are used.
 - Change the game so that it uses the XBox controller instead of the keyboard. Be sure to map all game functions such as start and pause to the controller and not just player control. (https://github.com/joncoop/pygame-xbox360controller)
 - Create an underwater level. You can use low gravity and low terminal velocity to slow down the up and down motion. You should use the jump key to swim up and then let the player slowly drift down. The tricky part is getting the jump to work whether or not you are standing on a block. Be sure that jumping still functions normally in land levels.
 - Create a game with at least 8 levels total. Levels should be significantly different in layout and each should be at least 36 block long.
