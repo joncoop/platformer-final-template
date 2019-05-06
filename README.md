@@ -33,8 +33,12 @@ Use the code from this repository as a template to create your own platformer.
 - Give the hero a maximum number of hearts. Then display hearts/max rather than just hearts. (Displaying heart icons is in the 'Medium' section.)
 - Create an item which gives the hero a heart. When the hero gets this item, hearts should not increase beyond the maximum number the hero can have.
 - Create an item which increases the max hearts a hero can have. 
+- Give points for getting the flag at the end of the level. Do so in a way that landing higher on the flagpole earns more points. One way to do this could be to check the y-coordinate of the hero when the flag is reached and devise a formula to award points.
 - If your character has lives in addtion to hearts (see the 'Hard' section), display lives in the format [character icon] x [number of lives].
 - If you made an invincibility powerup (in the 'Medium' section), make the player kill enemies collided with while invincibleBe sure that the temporary invincibility acquired after colliding with an enemy does not result in killing enemies.
+- Animate your hero sprite. The hero should have separate images for idle, jumping, and at least two walking images. Each image should be mirrored so that the hero is always facing the direction that it is moving.
+- If you animated your hero, add an additional image to your hero to indicate when it is hurt. This should only show during the brief invincibility period while hurt. Be sure it does not display for invincibility earned through a powerup. 
+- Add a 'happy' image to your hero animation that is displayed when your hero completes a level.
 
 ### Medium
 
@@ -54,7 +58,6 @@ Use the code from this repository as a template to create your own platformer.
 - Create a custom enemy with unique behavior regarding movement.
 - Require the hero to perform a task in order to complete the level. For example, maybe the hero needs to collect a key in order to open a door in the level goal area.
 - Utilize vertical scrolling in a level. You'll need to modify the calculate_offset function to get vertical scrolling to work.
-- Give points for getting the flag at the end of the level. Do so in a way that landing higher on the flagpole earns more points. One way to do this could be to check the y-coordinate of the hero when the flag is reached and devise a formula to award points.
 - Show time on the stats layer. Give a time bonus for completing a level. Have the hero die if the level is not completed in a set amount of time.
 
 ### Hard
