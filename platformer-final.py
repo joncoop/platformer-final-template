@@ -28,7 +28,7 @@ def load_font(font_face, font_size):
 def load_image(path):
     return pygame.image.load(path).convert_alpha()
 
-def flip_img(img):
+def flip_image(img):
     return pygame.transform.flip(img, 1, 0)
 
 def load_sound(path):
@@ -57,11 +57,22 @@ jump_snd = load_sound('assets/sounds/jump.ogg')
 gem_snd = load_sound('assets/sounds/gem.ogg')
 
 # Images
-hero_images = { "idle_rt": load_image('assets/images/characters/platformChar_idle.png'),
-                "walk1_rt": load_image('assets/images/characters/platformChar_walk1.png'),
-                "walk2_rt": load_image('assets/images/characters/platformChar_walk2.png'),
-                "jump_rt": load_image('assets/images/characters/platformChar_jump.png'),
-                "hurt_rt": load_image('assets/images/characters/platformChar_hurt.png') }
+idle = load_image('assets/images/characters/platformChar_idle.png')
+walk1 = load_image('assets/images/characters/platformChar_walk1.png')
+walk2 = load_image('assets/images/characters/platformChar_walk2.png')
+jump = load_image('assets/images/characters/platformChar_jump.png')
+hurt = load_image('assets/images/characters/platformChar_hurt.png')
+                   
+hero_images = { "idle_rt": idle,
+                "walk1_rt": walk1,
+                "walk2_rt": walk2,
+                "jump_rt": jump,
+                "hurt_rt": hurt,
+                "idle_lt": flip_image(idle),
+                "walk1_lt": flip_image(walk1),
+                "walk2_lt": flip_image(walk2),
+                "jump_lt": flip_image(jump),
+                "hurt_lt": flip_image(hurt) }
              
 tile_images = { "Grass": load_image('assets/images/tiles/platformPack_tile001.png'),
                 "Dirt": load_image('assets/images/tiles/platformPack_tile007.png'),
