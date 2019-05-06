@@ -10,14 +10,15 @@ Use the code from this repository as a template to create your own platformer.
 
 - Name your game.
 - Change the dimensions of the game window.
-- Find your own custom artwork for blocks.
+- Find your own custom artwork for tiles.
 - Find your own custom artwork for the hero.
 - Find your own custom artwork for enemies.
 - Find a background images for a level. Be sure the background images are scaled to fit the game window and that they tile without showing seams. Adjust the parallax settings as you see fit.
-- Find a background images for each level you make.
+- Find different background images for each level you make.
 - Find your own theme music for a level.
 - Use different theme music for each level you make.
 - Include tiles in the foreground layer of a level. The hero should run behind these images and not interact with them.
+- Keep your assets folder organized. Use subfolders to store different types of assets. Remove unused asset sets from your repository.
 - In your assets folder, update the sources.txt file to keep track of where each set of assets is from.
 
 ### Easy
