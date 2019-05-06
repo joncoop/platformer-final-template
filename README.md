@@ -4,7 +4,7 @@
 
 This is the animated branch. 
 
-## Hero Animation
+### Hero Animation
 
 The hero has three additional attributes.
 
@@ -18,4 +18,4 @@ Two functions have been added to the hero.
 
 In  the heros `update` function calls a new function set_image. `set_image` looks at the current direction and state of the hero (hurt, jumping/falling, idle, or walking) to set the appropriate image.
 
-## Enemy Animation
+### Enemy Animation
