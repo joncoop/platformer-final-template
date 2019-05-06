@@ -2,7 +2,7 @@
 
 ## About
 
-Use the code from this repository as a template to create your own platformer.
+Use the code from this repository as a template to create your own platformer. Each idea you implement is worth points based on difficulty. See the 'Grading' section below for details. If you have ideas that I haven't thought of, tell me and I'll add them to this list.
 
 ## Ideas for student projects
 
