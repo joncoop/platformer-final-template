@@ -57,11 +57,11 @@ jump_snd = load_sound('assets/sounds/jump.ogg')
 gem_snd = load_sound('assets/sounds/gem.ogg')
 
 # Images
-hero_images = { "idle": load_image('assets/images/characters/platformChar_idle.png'),
-                "walk1": load_image('assets/images/characters/platformChar_walk1.png'),
-                "walk2": load_image('assets/images/characters/platformChar_walk2.png'),
-                "jump": load_image('assets/images/characters/platformChar_jump.png'),
-                "hurt": load_image('assets/images/characters/platformChar_hurt.png') }
+hero_images = { "idle_rt": load_image('assets/images/characters/platformChar_idle.png'),
+                "walk1_rt": load_image('assets/images/characters/platformChar_walk1.png'),
+                "walk2_rt": load_image('assets/images/characters/platformChar_walk2.png'),
+                "jump_rt": load_image('assets/images/characters/platformChar_jump.png'),
+                "hurt_rt": load_image('assets/images/characters/platformChar_hurt.png') }
              
 tile_images = { "Grass": load_image('assets/images/tiles/platformPack_tile001.png'),
                 "Dirt": load_image('assets/images/tiles/platformPack_tile007.png'),
@@ -70,8 +70,9 @@ tile_images = { "Grass": load_image('assets/images/tiles/platformPack_tile001.pn
                 "FlagTop": load_image('assets/images/tiles/medievalTile_166.png'),
                 "FlagPole": load_image('assets/images/tiles/medievalTile_190.png') }
         
-enemy_images = { "BasicEnemy": load_image('assets/images/characters/platformPack_tile024.png'),
-                 "PlatformEnemy": load_image('assets/images/characters/platformPack_tile011.png')} 
+basic_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile024.png') }
+
+platform_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile011.png') } 
 
 item_images = { "Gem": load_image('assets/images/items/platformPack_item008.png') }
 
@@ -96,7 +97,7 @@ class Hero(pygame.sprite.Sprite):
         super().__init__()
 
         self.images = images
-        self.image = images["idle"]
+        self.image = images["idle_rt"]
         self.rect = self.image.get_rect()
 
         self.speed = 8
@@ -203,10 +204,11 @@ class BasicEnemy(pygame.sprite.Sprite):
     BasicEnemies, so they will walk off platforms.
     '''
     
-    def __init__(self, x, y, image):
+    def __init__(self, x, y, images):
         super().__init__()
 
-        self.image = image
+        self.images = images
+        self.image = images["walk1"]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -271,8 +273,8 @@ class PlatformEnemy(BasicEnemy):
     function move_and_check_walls needs to be included.
     '''
     
-    def __init__(self, x, y, image):
-        super().__init__(x, y, image)
+    def __init__(self, x, y, images):
+        super().__init__(x, y, images)
 
     def move_and_check_tiles(self, level):
         reverse = False
@@ -399,8 +401,7 @@ class Level():
                 y = element[1] * self.scale
                 kind = element[2]
 
-                img = tile_images[kind]
-                t = Tile(x, y, img)
+                t = Tile(x, y, tile_images[kind])
 
                 if group_name == 'midground':
                     self.midground_tiles.add(t)
@@ -416,10 +417,9 @@ class Level():
             x = element[0] * self.scale
             y = element[1] * self.scale
             kind = element[2]
-            img = item_images[kind]
             
             if kind == "Gem":
-                s = Gem(x, y, img)
+                s = Gem(x, y, item_images[kind])
                 
             self.items.add(s)
 
@@ -430,12 +430,11 @@ class Level():
             x = element[0] * self.scale
             y = element[1] * self.scale
             kind = element[2]
-            img = enemy_images[kind]
             
             if kind == "BasicEnemy":
-                s = BasicEnemy(x, y, img)
+                s = BasicEnemy(x, y, basic_enemy_images)
             elif kind == "PlatformEnemy":
-                s = PlatformEnemy(x, y, img)
+                s = PlatformEnemy(x, y, platform_enemy_images)
                 
             self.enemies.add(s)
 
