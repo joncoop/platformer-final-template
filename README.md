@@ -22,6 +22,7 @@ Use the code from this repository as a template to create your own platformer.
 - In your assets folder, update the sources.txt file to keep track of where each set of assets is from.
 
 ### Easy
+
 - Design a complex standard level. Your level should be at least 40 blocks long. Your level should be significaltly different from the template to receive credit.
 - Create a level which takes place on a different planet. You can modify the gravity and terminal velocity in the level data to create the physics you want. (A gravity of less than 1 will make the world 'bouncier'.) Use a space-themed tiles and background images for your level.
 - Create your own custom artwork for one unanimated entity in the game. http://www.piskelapp.com/ is a good site for this.
