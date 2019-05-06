@@ -117,7 +117,7 @@ class Hero(pygame.sprite.Sprite):
         self.vy = 0
 
         self.hearts = 3
-        self.invincibility_timer = 0
+        self.hurt_timer = 0
     
         self.reached_goal = False
         self.score = 0
@@ -182,14 +182,14 @@ class Hero(pygame.sprite.Sprite):
             hit.apply(self)
 
     def process_enemies(self, level):
-        if self.invincibility_timer > 0:
-            self.invincibility_timer -= 1
+        if self.hurt_timer > 0:
+            self.hurt_timer -= 1
         else:
             hit_list = pygame.sprite.spritecollide(self, level.enemies, False)
 
             for hit in hit_list:
                 self.hearts -= 1
-                self.invincibility_timer = 30
+                self.hurt_timer = 30
     
     def check_world_edges(self, level):
         if self.rect.left < 0:
