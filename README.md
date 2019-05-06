@@ -45,7 +45,7 @@ Use the code from this repository as a template to create your own platformer. E
 
 ### Medium
 
-- Create a game with at least 4 levels total. Levels should be significantly different in layout and each should be at least 36 block long.
+- Create a game with at least 4 levels total. Levels should be significantly different in layout and each should be at least 40 block long.
 - Create your own custom artwork for one animated entity in the game. Entities that only flip when they change directions are not considered animated. Animation should include multiple frames such as when the hero runs. http://www.piskelapp.com/ is a good site for this.
 - Create your own custom artwork for at least three animated entities in the game.
 - Use tiles in the midground layer to create complex artwork. For example, the end of the level could have a castle that the hero can run in front of. (Perhaps the location of the door on the castle could correspond to the goal zone.)
