@@ -40,7 +40,7 @@ Use the code from this repository as a template to create your own platformer. E
 - If your character has lives in addtion to hearts (see the 'Hard' section), display lives in the format [character icon] x [number of lives].
 - If you made an invincibility powerup (in the 'Medium' section), make the player kill enemies collided with while invincibleBe sure that the temporary invincibility acquired after colliding with an enemy does not result in killing enemies.
 - Animate your hero sprite. The hero should have separate images for idle, jumping, and at least two walking images. Each image should be mirrored so that the hero is always facing the direction that it is moving.
-- If you animated your hero, add an additional image to your hero to indicate when it is hurt. This should only show during the brief invincibility period while hurt. Be sure it does not display for invincibility earned through a powerup. 
+- If you animated your hero, add an additional image to your hero to indicate when it is hurt. This should only show during the brief invincibility period while hurt, and the state for this image should take priority over all other states. Be sure it does not display for invincibility earned through a powerup. 
 - Add a 'happy' image to your hero animation that is displayed when your hero completes a level.
 
 ### Medium
