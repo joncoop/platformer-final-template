@@ -476,8 +476,8 @@ class Level():
     def tile_image(self, img, surf):
         surf_w = surf.get_width()
         surf_h = surf.get_height()
-        img_w = self.bg_image1.get_width()
-        img_h = self.bg_image1.get_height()
+        img_w = img.get_width()
+        img_h = img.get_height()
         
         for x in range(0, surf_w, img_w):
             for y in range(0, surf_h, img_h):
