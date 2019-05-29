@@ -4,6 +4,13 @@ import json
 import os
 import sys
 
+
+if getattr(sys, 'frozen', False):
+    current_path = sys._MEIPASS + '/'
+else:
+    current_path = os.path.dirname(__file__) + '/'
+
+
 # Initialize game engine
 pygame.mixer.pre_init()
 pygame.init()
@@ -12,7 +19,7 @@ pygame.init()
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 576
 TITLE = "Name of Game"
-FPS = 60
+FPS = 30
 
 # Optional grid for help with level design
 show_grid = True
@@ -23,18 +30,21 @@ pygame.display.set_caption(TITLE)
 
 # Helper functions for loading assets
 def load_font(font_face, font_size):
-    return pygame.font.Font(font_face, font_size)
+    return pygame.font.Font(current_path + font_face, font_size)
 
 def load_image(path):
-    return pygame.image.load(path).convert_alpha()
+    return pygame.image.load(current_path + path).convert_alpha()
 
 def flip_image(img):
     return pygame.transform.flip(img, 1, 0)
 
 def load_sound(path):
-    return pygame.mixer.Sound(path)
+    return pygame.mixer.Sound(current_path + path)
 
 # Helper functions for playing music
+def load_music(path):
+    pygame.mixer.music.load(current_path + path)
+    
 def play_music():
     pygame.mixer.music.play(-1)
 
@@ -46,11 +56,11 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 # Fonts
-font_xs = load_font(None, 16)
-font_sm = load_font(None, 32)
-font_md = load_font(None, 48)
-font_lg = load_font(None, 64)
 font_xl = load_font("assets/fonts/Cheri.ttf", 80)
+font_xs = load_font("assets/fonts/libel-suit-rg.ttf", 16)
+font_sm = load_font("assets/fonts/libel-suit-rg.ttf", 32)
+font_md = load_font("assets/fonts/libel-suit-rg.ttf", 48)
+font_lg = load_font("assets/fonts/libel-suit-rg.ttf", 64)
 
 # Sounds
 jump_snd = load_sound('assets/sounds/jump.ogg')
@@ -58,22 +68,26 @@ gem_snd = load_sound('assets/sounds/gem.ogg')
 
 # Images
 idle = load_image('assets/images/characters/platformChar_idle.png')
-walk1 = load_image('assets/images/characters/platformChar_walk1.png')
-walk2 = load_image('assets/images/characters/platformChar_walk2.png')
+walk = [load_image('assets/images/characters/platformChar_walk1.png'),
+        load_image('assets/images/characters/platformChar_walk2.png')]
 jump = load_image('assets/images/characters/platformChar_jump.png')
 hurt = load_image('assets/images/characters/platformChar_hurt.png')
                    
 hero_images = { "idle_rt": idle,
-                "walk1_rt": walk1,
-                "walk2_rt": walk2,
+                "walk_rt": walk,
                 "jump_rt": jump,
                 "hurt_rt": hurt,
                 "idle_lt": flip_image(idle),
-                "walk1_lt": flip_image(walk1),
-                "walk2_lt": flip_image(walk2),
+                "walk_lt" : [flip_image(img) for img in walk],
                 "jump_lt": flip_image(jump),
                 "hurt_lt": flip_image(hurt) }
              
+basic_enemy_images = [ load_image('assets/images/characters/platformPack_tile024a.png'),
+                       load_image('assets/images/characters/platformPack_tile024b.png') ]
+
+platform_enemy_images = [ load_image('assets/images/characters/platformPack_tile011a.png'),
+                          load_image('assets/images/characters/platformPack_tile011b.png') ] 
+
 tile_images = { "Grass": load_image('assets/images/tiles/platformPack_tile001.png'),
                 "Dirt": load_image('assets/images/tiles/platformPack_tile007.png'),
                 "Platform": load_image('assets/images/tiles/platformPack_tile007.png'),
@@ -81,16 +95,12 @@ tile_images = { "Grass": load_image('assets/images/tiles/platformPack_tile001.pn
                 "FlagTop": load_image('assets/images/tiles/medievalTile_166.png'),
                 "FlagPole": load_image('assets/images/tiles/medievalTile_190.png') }
         
-basic_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile024.png') }
-
-platform_enemy_images = { "walk1": load_image('assets/images/characters/platformPack_tile011.png') } 
-
 item_images = { "Gem": load_image('assets/images/items/platformPack_item008.png') }
 
 # Levels
-levels = ["assets/levels/level_1.json",
-          "assets/levels/level_1.json",
-          "assets/levels/level_1.json"]
+levels = [current_path + "assets/levels/level_1.json",
+          current_path + "assets/levels/level_1.json",
+          current_path + "assets/levels/level_1.json"]
     
 # Sprite classes
 class Tile(pygame.sprite.Sprite):
@@ -111,8 +121,8 @@ class Hero(pygame.sprite.Sprite):
         self.image = images["idle_rt"]
         self.rect = self.image.get_rect()
 
-        self.speed = 8
-        self.jump_power = 24
+        self.speed = 12
+        self.jump_power = 26
         self.vx = 0
         self.vy = 0
 
@@ -121,17 +131,32 @@ class Hero(pygame.sprite.Sprite):
     
         self.reached_goal = False
         self.score = 0
+
+        self.facing_right = True
+        self.steps = 0
+        self.step_rate = 4
+        self.walk_index = 0
         
     def move_to(self, x, y):
         self.rect.x = x
         self.rect.y = y
         
+    def step(self):
+        self.steps = (self.steps + 1) % self.step_rate
+
+        if self.steps == 0:
+            self.walk_index = (self.walk_index + 1) % len(self.images['walk_rt'])
+        
     def move_left(self):
         self.vx = -self.speed
+        self.facing_right = False
+        self.step()
     
     def move_right(self):
         self.vx = self.speed
-
+        self.facing_right = True
+        self.step()
+        
     def stop(self):
         self.vx = 0
 
@@ -154,8 +179,10 @@ class Hero(pygame.sprite.Sprite):
             self.vy = level.terminal_velocity
 
     def move_and_check_tiles(self, level):
+        collidables = level.main_tiles
+                
         self.rect.x += self.vx
-        hit_list = pygame.sprite.spritecollide(self, level.main_tiles, False)
+        hit_list = pygame.sprite.spritecollide(self, collidables, False)
 
         for hit in hit_list:
             if self.vx > 0:
@@ -199,7 +226,28 @@ class Hero(pygame.sprite.Sprite):
 
     def check_goal(self, level):
         self.reached_goal = level.goal.contains(self.rect)
-        
+
+    def set_image(self):
+        if self.facing_right:
+            idle = self.images['idle_rt']
+            walk = self.images['walk_rt']
+            jump = self.images['jump_rt']
+            hurt = self.images['hurt_rt']
+        else:
+            idle = self.images['idle_lt']
+            walk = self.images['walk_lt']
+            jump = self.images['jump_lt']
+            hurt = self.images['hurt_lt']
+
+        if self.hurt_timer > 0:
+            self.image = hurt
+        elif self.vy != 0:
+            self.image = jump
+        elif self.vx == 0:
+            self.image = idle
+        else:
+            self.image = walk[self.walk_index]
+            
     def update(self, level):
         self.apply_gravity(level)
         self.move_and_check_tiles(level)
@@ -207,6 +255,7 @@ class Hero(pygame.sprite.Sprite):
         self.process_items(level)
         self.process_enemies(level)
         self.check_goal(level)
+        self.set_image()
 
 class BasicEnemy(pygame.sprite.Sprite):
     '''
@@ -219,7 +268,7 @@ class BasicEnemy(pygame.sprite.Sprite):
         super().__init__()
 
         self.images = images
-        self.image = images["walk1"]
+        self.image = images[0]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -227,6 +276,10 @@ class BasicEnemy(pygame.sprite.Sprite):
         self.vx = -4
         self.vy = 0
 
+        self.steps = 0
+        self.step_rate = 6
+        self.walk_index = 0
+        
     def reverse(self):
         self.vx = -1 * self.vx
         
@@ -265,7 +318,16 @@ class BasicEnemy(pygame.sprite.Sprite):
         elif self.rect.right > level.width:
             self.rect.right = level.width
             self.should_reverse = True
-            
+        
+    def step(self):
+        self.steps = (self.steps + 1) % self.step_rate
+
+        if self.steps == 0:
+            self.walk_index = (self.walk_index + 1) % len(self.images)
+
+    def set_image(self):
+        self.image = self.images[self.walk_index]
+        
     def update(self, level):
         self.should_reverse = False
         
@@ -275,6 +337,9 @@ class BasicEnemy(pygame.sprite.Sprite):
         
         if self.should_reverse:
             self.reverse()
+            
+        self.step()
+        self.set_image()
             
 class PlatformEnemy(BasicEnemy):
     '''
@@ -375,7 +440,7 @@ class Level():
         self.start_y = self.map_data['layout']['start'][1] * self.scale
 
     def load_music(self):
-        pygame.mixer.music.load(self.map_data['music'])
+        load_music(self.map_data['music'])
         
     def load_physics(self):
         self.gravity = self.map_data['physics']['gravity']
@@ -386,13 +451,13 @@ class Level():
         path1 = self.map_data['background']['image1']
         path2 = self.map_data['background']['image2']
 
-        if os.path.isfile(path1):
-            self.bg_image1 = pygame.image.load(path1).convert_alpha()
+        if os.path.isfile(current_path + path1):
+            self.bg_image1 = pygame.image.load(current_path + path1).convert_alpha()
         else:
             self.bg_image1 = None
 
-        if os.path.isfile(path2):
-            self.bg_image2 = pygame.image.load(path2).convert_alpha()
+        if os.path.isfile(current_path + path2):
+            self.bg_image2 = pygame.image.load(current_path + path2).convert_alpha()
         else:
             self.bg_image2 = None
 
@@ -466,25 +531,27 @@ class Level():
         self.goal = pygame.Rect([x, y, w, h])
 
     def generate_layers(self):
-        self.world = pygame.Surface([self.width, self.height])
         self.background1 = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
         self.background2 = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
         self.inactive = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
         self.active = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
         self.foreground = pygame.Surface([self.width, self.height], pygame.SRCALPHA, 32)
 
+        print(self.width, self.background1.get_width(), self.background2.get_width())
+        
     def tile_image(self, img, surf):
         surf_w = surf.get_width()
         surf_h = surf.get_height()
         img_w = img.get_width()
         img_h = img.get_height()
-        
+
+        y = 0
         for x in range(0, surf_w, img_w):
             for y in range(0, surf_h, img_h):
                 surf.blit(img, [x, y])
-                
+        
     def prerender_inactive_layers(self):
-        self.world.fill(self.bg_color)
+        self.background1.fill(self.bg_color)
         
         if self.bg_image1 != None:
             self.tile_image(self.bg_image1, self.background1)
@@ -532,7 +599,6 @@ class Game():
 
         self.stage = Game.START
         self.current_level = 1
-        self.load_level()
 
     def load_level(self):
         level_index = self.current_level - 1
@@ -541,6 +607,8 @@ class Game():
 
         self.hero.move_to(self.level.start_x, self.level.start_y)
         self.hero.reached_goal = False
+        self.hero.vx = 0
+        self.hero.vy = 0
 
         self.active_sprites = pygame.sprite.Group()
         self.active_sprites.add(self.hero, self.level.items, self.level.enemies)
@@ -558,13 +626,13 @@ class Game():
             self.stage = Game.WIN
 
     def show_title_screen(self):
-        text = font_xl.render(TITLE, 1, BLACK)
+        text = font_xl.render(TITLE, 1, WHITE)
         rect = text.get_rect()
         rect.centerx = SCREEN_WIDTH // 2
         rect.centery = 212
         screen.blit(text, rect)
         
-        text = font_sm.render("Press space to start.", 1, BLACK)
+        text = font_sm.render("Press space to start.", 1, WHITE)
         rect = text.get_rect()
         rect.centerx = SCREEN_WIDTH // 2
         rect.centery = 272
@@ -618,13 +686,14 @@ class Game():
                    
     def calculate_offset(self):
         x = -1 * self.hero.rect.centerx + SCREEN_WIDTH / 2
-
+        y = 0
+        
         if self.hero.rect.centerx < SCREEN_WIDTH / 2:
             x = 0
         elif self.hero.rect.centerx > self.level.width - SCREEN_WIDTH / 2:
             x = -1 * self.level.width + SCREEN_WIDTH
 
-        return x, 0
+        return round(x), round(y)
 
     def process_input(self):     
         for event in pygame.event.get():
@@ -634,6 +703,7 @@ class Game():
             elif event.type == pygame.KEYDOWN:
                 if self.stage == Game.START:
                     if event.key == pygame.K_SPACE:
+                        self.load_level()
                         self.start_level()
                         
                 elif self.stage == Game.PLAYING:
@@ -673,27 +743,26 @@ class Game():
                 self.advance()
             
     def render(self):
-        self.level.active.fill([0, 0, 0, 0]) # Transparent so background shows through
-        self.active_sprites.draw(self.level.active)
+        if self.stage == Game.PLAYING:
+            self.level.active.fill([0, 0, 0, 0])
+            self.active_sprites.draw(self.level.active)
 
-        offset_x, offset_y = self.calculate_offset()
-        bg1_offset_x = -1 * offset_x * self.level.parallax_speed1
-        bg1_offset_y = -1 * offset_y * self.level.parallax_speed1
-        bg2_offset_x = -1 * offset_x * self.level.parallax_speed2
-        bg2_offset_y = -1 * offset_y * self.level.parallax_speed2
-        
-        self.level.world.blit(self.level.background1, [bg1_offset_x, bg1_offset_y])
-        self.level.world.blit(self.level.background2, [bg2_offset_x, bg2_offset_y])
-        self.level.world.blit(self.level.inactive, [0, 0])
-        self.level.world.blit(self.level.active, [0, 0])
-        self.level.world.blit(self.level.foreground, [0, 0])
+            offset_x, offset_y = self.calculate_offset()
+            bg1_offset_x = offset_x * self.level.parallax_speed1
+            bg1_offset_y = offset_y * self.level.parallax_speed1
+            bg2_offset_x = offset_x * self.level.parallax_speed2
+            bg2_offset_y = offset_y * self.level.parallax_speed2
 
-        if show_grid:
-            self.level.world.blit(self.level.grid, [0, 0])                     
-        
-        screen.blit(self.level.world, [offset_x, offset_y])
+            screen.blit(self.level.background1, [bg1_offset_x, bg1_offset_y])
+            screen.blit(self.level.background2, [bg2_offset_x, bg2_offset_y])
+            screen.blit(self.level.inactive, [offset_x, offset_y])
+            screen.blit(self.level.active, [offset_x, offset_y])
+            screen.blit(self.level.foreground, [offset_x, offset_y])
 
-        self.show_stats()
+            if show_grid:
+                screen.blit(self.level.grid, [offset_x, offset_y])                     
+
+            self.show_stats()
         
         if self.stage == Game.START:
             self.show_title_screen()        
