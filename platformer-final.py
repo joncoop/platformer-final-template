@@ -4,12 +4,11 @@ import json
 import os
 import sys
 
-
+# Stuff for executable version
 if getattr(sys, 'frozen', False):
-    current_path = sys._MEIPASS + '/'
+    application_path  = sys._MEIPASS + '/'
 else:
-    current_path = os.path.dirname(__file__) + '/'
-
+    application_path  = os.path.dirname(__file__) + '/'
 
 # Initialize game engine
 pygame.mixer.pre_init()
@@ -30,20 +29,20 @@ pygame.display.set_caption(TITLE)
 
 # Helper functions for loading assets
 def load_font(font_face, font_size):
-    return pygame.font.Font(current_path + font_face, font_size)
+    return pygame.font.Font(application_path  + font_face, font_size)
 
 def load_image(path):
-    return pygame.image.load(current_path + path).convert_alpha()
+    return pygame.image.load(application_path  + path).convert_alpha()
 
 def flip_image(img):
     return pygame.transform.flip(img, 1, 0)
 
 def load_sound(path):
-    return pygame.mixer.Sound(current_path + path)
+    return pygame.mixer.Sound(application_path  + path)
 
 # Helper functions for playing music
 def load_music(path):
-    pygame.mixer.music.load(current_path + path)
+    pygame.mixer.music.load(application_path  + path)
     
 def play_music():
     pygame.mixer.music.play(-1)
@@ -56,20 +55,26 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 # Fonts
-font_xl = load_font("assets/fonts/Cheri.ttf", 80)
 font_xs = load_font("assets/fonts/libel-suit-rg.ttf", 16)
 font_sm = load_font("assets/fonts/libel-suit-rg.ttf", 32)
 font_md = load_font("assets/fonts/libel-suit-rg.ttf", 48)
 font_lg = load_font("assets/fonts/libel-suit-rg.ttf", 64)
+font_xl = load_font("assets/fonts/Cheri.ttf", 80)
 
 # Sounds
-jump_snd = load_sound('assets/sounds/jump.ogg')
+clear_snd = None
+die_sound = None
 gem_snd = load_sound('assets/sounds/gem.ogg')
+hurt_snd = None
+jump_snd = load_sound('assets/sounds/jump.ogg')
+powerup_snd = None
+victory_snd = None
+
 
 # Images
 idle = load_image('assets/images/characters/platformChar_idle.png')
-walk = [load_image('assets/images/characters/platformChar_walk1.png'),
-        load_image('assets/images/characters/platformChar_walk2.png')]
+walk = [ load_image('assets/images/characters/platformChar_walk1.png'),
+         load_image('assets/images/characters/platformChar_walk2.png') ]
 jump = load_image('assets/images/characters/platformChar_jump.png')
 hurt = load_image('assets/images/characters/platformChar_hurt.png')
                    
@@ -98,9 +103,9 @@ tile_images = { "Grass": load_image('assets/images/tiles/platformPack_tile001.pn
 item_images = { "Gem": load_image('assets/images/items/platformPack_item008.png') }
 
 # Levels
-levels = [current_path + "assets/levels/level_1.json",
-          current_path + "assets/levels/level_1.json",
-          current_path + "assets/levels/level_1.json"]
+levels = [application_path  + "assets/levels/level_1.json",
+          application_path  + "assets/levels/level_1.json",
+          application_path  + "assets/levels/level_1.json"]
     
 # Sprite classes
 class Tile(pygame.sprite.Sprite):
@@ -205,7 +210,6 @@ class Hero(pygame.sprite.Sprite):
         hit_list = pygame.sprite.spritecollide(self, level.items, True)
 
         for hit in hit_list:
-            self.score += hit.value
             hit.apply(self)
 
     def process_enemies(self, level):
@@ -451,13 +455,13 @@ class Level():
         path1 = self.map_data['background']['image1']
         path2 = self.map_data['background']['image2']
 
-        if os.path.isfile(current_path + path1):
-            self.bg_image1 = pygame.image.load(current_path + path1).convert_alpha()
+        if os.path.isfile(application_path  + path1):
+            self.bg_image1 = pygame.image.load(application_path  + path1).convert_alpha()
         else:
             self.bg_image1 = None
 
-        if os.path.isfile(current_path + path2):
-            self.bg_image2 = pygame.image.load(current_path + path2).convert_alpha()
+        if os.path.isfile(application_path  + path2):
+            self.bg_image2 = pygame.image.load(application_path  + path2).convert_alpha()
         else:
             self.bg_image2 = None
 
